@@ -16,6 +16,7 @@ def test_cli_scan_outputs_and_photos_untouched(tmp_path):
     assert run["models"] and run["onnxruntime"] and run["device"] == "CPU"
     assert run["timing"]["median_ms"] >= 0 and run["workers"] == 1
     assert run["counts"]["tagged"] == 1
+    assert (out / "review.html").exists()
     assert run["photo_root"] == str(folder.resolve())
     assert {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in folder.iterdir()} == before
 
@@ -36,6 +37,7 @@ def test_progress_json_lines(tmp_path, capsys):
     assert [row["type"] for row in lines] == ["progress", "progress", "summary"]
     assert lines[-1]["tagged"] == 1 and lines[-1]["error"] == 1
     assert lines[-1]["skipped"] == 1
+    assert not (tmp_path / "race_biblocal/review.html").exists()
 
 
 def test_missing_folder_and_bad_threshold_exit_2(tmp_path, capsys):
@@ -43,3 +45,17 @@ def test_missing_folder_and_bad_threshold_exit_2(tmp_path, capsys):
     assert "missing" in capsys.readouterr().err
     assert main(["scan", str(tmp_path), "--review", ".9", "--accept", ".5"]) == 2
     assert "review" in capsys.readouterr().err
+
+
+def test_cli_rejects_output_within_photo_folder_before_ocr(tmp_path, capsys, monkeypatch):
+    def unexpected_ocr(**kwargs):
+        raise AssertionError("output must be validated before OCR")
+    monkeypatch.setattr("biblocal.cli.OcrEngine", unexpected_ocr)
+    for out in (tmp_path, tmp_path / "nested"):
+        assert main(["scan", str(tmp_path), "--out", str(out)]) == 2
+        assert "output" in capsys.readouterr().err.lower()
+
+
+def test_cli_rejects_threshold_below_ocr_floor(tmp_path, capsys):
+    assert main(["scan", str(tmp_path), "--review", ".3", "--accept", ".4"]) == 2
+    assert "0.50" in capsys.readouterr().err

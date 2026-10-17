@@ -30,7 +30,8 @@ under the photo folder and refuse writes when ExifTool warns of metadata loss;
 long legacy IPTC text may require sidecars. Creating a new sidecar in a path
 containing `%` is unsupported. See [writer verification](docs/notes/exiftool-api.md).
 
-Lightroom/digiKam verification is pending at [CHECKPOINT C](docs/notes/k4.md).
+Keyword filtering and hierarchy passed in **digiKam 9.1.0**, confirmed by Amit
+at [CHECKPOINT C](docs/notes/k4.md). Lightroom Classic remains untested.
 
 ## Accuracy
 

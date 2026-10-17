@@ -1,6 +1,10 @@
 # BibLocal MVP Implementation Plan
 
-> **Latest ruling, 17 Oct 2026:** CHECKPOINT B GO received for Task 8 after
+> **Latest ruling, 18 Oct 2026:** K4 PASS in digiKam 9.1.0: Bib > 2605
+> matched exactly set1_12.JPG and set1_14.JPG, hierarchy visible. GO received
+> for Task 9 then Task 11; list remaining work before 18:00 IST and stop.
+>
+> **17 Oct ruling:** CHECKPOINT B GO received for Task 8 after
 > changing defaults to accept 0.90 and minimum height share 0.04, confirming
 > truth-list CLI hit 80% / wrong 0%, and committing. README must label range
 > as realistic, truth as best case, disclose set2 hit 69.70%, in-sample data,
@@ -597,7 +601,7 @@ IPTC conversion, duplicate prevention, overlength-text refusal, concurrent
 source edits, backups, unchanged pixels, Unicode paths and sidecar preservation.
 Ten K4 copies are prepared: eight written, two skipped, no failures; all 100 K1
 original hashes and all ten K4 decoded-pixel hashes are unchanged. Human
-Lightroom/digiKam validation remains **PENDING**. Stop here; see `docs/notes/k4.md`.
+validation **PASS in digiKam 9.1.0**, reported 18 Oct; see `docs/notes/k4.md`.
 
 **Files:**
 - Create: `src/biblocal/exif.py`, `docs/notes/k4.md`
@@ -642,7 +646,7 @@ def test_build_args_dedupes_and_ends_with_execute(tmp_path):
   - `test_non_ascii_path_written`: folder `Lauf 2026`, files `ü 01.jpg` and `ü 02.jpg` written in one batch; both get the keyword.
 - [x] **Step 3:** Run → FAIL. **Step 4:** Implement. **Step 5:** Run all tests → PASS. Integration tests must run, not skip, on Amit's machine (`BIBLOCAL_EXIFTOOL` is set).
 - [x] **Step 6: Commit:** `task 8: exiftool writer and --write`.
-- [ ] **CHECKPOINT C — K4, Amit, about 20 minutes.**
+- [x] **CHECKPOINT C — K4, Amit, about 20 minutes.** PASS reported 18 Oct, digiKam 9.1.0.
   1. Copy 10 photos from `data/k1` to `data/k4`.
   2. Run `biblocal scan data/k4 --start-list <list> --write embed`.
   3. Import `data/k4` into Lightroom Classic (or digiKam) and filter by one tagged bib's keyword. Confirm the right photos appear. For photos already in a catalog, use Metadata > Read Metadata from Files.
@@ -651,6 +655,13 @@ def test_build_args_dedupes_and_ends_with_execute(tmp_path):
 ---
 
 ### Task 9: Review page and `apply`
+
+**18 Oct implementation status:** complete; test-first, 121 tests passed,
+including local Edge export/keyboard interactions and real ExifTool apply.
+Final review fixes reject output within the source folder and unsupported
+CLI review thresholds below the OCR floor of 0.50. Defaults are unchanged.
+Amit's five-card acceptance check is pending; the page and exact instructions
+are in `docs/notes/task9-review.md`. Continue Task 11 under the received GO.
 
 **Files:**
 - Create: `src/biblocal/review.py`
@@ -676,7 +687,7 @@ def apply_corrections(results: list[PhotoResult], corrections: dict[str, list[st
   - A non-digit bib, or a file not in results, raises `ValueError` naming the file.
 - CLI: `biblocal apply CORRECTIONS_CSV --results RESULTS_CSV [--start-list FILE] [--write none|sidecar|embed] [writer flags]`. It writes `results_final.csv` next to `results.csv` and keywords for corrected files only.
 
-- [ ] **Step 1: Write the failing tests**:
+- [x] **Step 1: Write the failing tests**:
 ```python
 def test_page_self_contained_and_lists_review_files(tmp_path, engine): ...
     # review.html exists, has no "http://" or "https://", names each review file, thumbs/ has one image per card
@@ -693,9 +704,9 @@ def test_apply_rejects_bad_bib():
     with pytest.raises(ValueError, match="a.jpg"):
         apply_corrections([PhotoResult("a.jpg", "review")], {"a.jpg": ["2A7"]}, None)
 ```
-- [ ] **Step 2:** Run → FAIL. **Step 3:** Implement. **Step 4:** Run all tests → PASS.
+- [x] **Step 2:** Run → FAIL. **Step 3:** Implement. **Step 4:** Run all tests → PASS.
 - [ ] **Step 5: Manual check (Amit, 5 minutes).** Open `review.html` from a real run, fix 5 cards, download `corrections.csv`, run `apply`, and check `results_final.csv`.
-- [ ] **Step 6: Commit:** `task 9: review page and apply`.
+- [x] **Step 6: Commit:** `task 9: review page and apply`.
 
 ---
 
