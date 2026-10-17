@@ -12,6 +12,7 @@ from time import perf_counter
 
 from . import __version__
 from .csv_io import read_bib_table, read_results_csv, write_results_csv
+from .exif import find_exiftool, write_keywords
 from .models import Settings
 from .ocr import OcrEngine
 from .pipeline import cpu_name, list_photos, scan_folder
@@ -40,12 +41,17 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="biblocal")
     parser.add_argument("--version", action="version", version=__version__)
     commands = parser.add_subparsers(dest="command", required=True)
-    scan = commands.add_parser("scan", help="Read JPEG bibs without changing photos")
+    scan = commands.add_parser("scan", help="Read JPEG bibs; write metadata only with --write")
     scan.add_argument("photos", type=Path)
     scan.add_argument("--start-list", type=Path)
     scan.add_argument("--out", type=Path)
     scan.add_argument("--progress", choices=["text", "json"], default="text")
     scan.add_argument("--no-review", action="store_true")
+    scan.add_argument("--write", choices=["none", "sidecar", "embed"], default="none")
+    scan.add_argument("--no-backup", action="store_true")
+    scan.add_argument("--exiftool")
+    scan.add_argument("--keyword-template", default="{bib}")
+    scan.add_argument("--with-names", action="store_true")
     _add_settings(scan)
     evaluation = commands.add_parser("eval", help="Evaluate results against labelled truth")
     evaluation.add_argument("results", type=Path)
@@ -75,6 +81,9 @@ def main(argv: list[str] | None = None) -> int:
             print(f"VERDICT K2={k2_verdict(report.effective_s_per_photo)}")
             return 0
         _, skipped = list_photos(folder)
+        exiftool = find_exiftool(args.exiftool) if args.write != "none" else None
+        if args.write != "none" and exiftool is None:
+            raise ValueError("ExifTool was not found; install it and set --exiftool PATH or BIBLOCAL_EXIFTOOL")
         start_list = load_start_list(args.start_list) if args.start_list is not None else None
         out = args.out.resolve() if args.out is not None else folder.with_name(folder.name + "_biblocal")
         started_at = datetime.now(timezone.utc).isoformat()
@@ -97,15 +106,22 @@ def main(argv: list[str] | None = None) -> int:
                   "effective_s_per_photo": seconds / len(results) if results else 0}
         out.mkdir(parents=True, exist_ok=True)
         write_results_csv(results, out / "results.csv")
+        writing = {"mode": args.write, "written": 0, "skipped": len(results), "failed": []}
+        if args.write != "none":
+            report = write_keywords(folder, results, args.write, exiftool, backup=not args.no_backup,
+                                    template=args.keyword_template, with_names=args.with_names)
+            writing = {"mode": args.write, **asdict(report)}
+            for file, reason in report.failed:
+                print(f"biblocal: metadata write failed for {file}: {reason}", file=sys.stderr)
         run = {"version": __version__, "started_at": started_at, "ended_at": datetime.now(timezone.utc).isoformat(),
                "arguments": vars(args), "photo_root": str(folder), "settings": asdict(settings),
                "counts": counts, "skipped": skipped, "timing": timing, **engine.info,
-               "python": platform.python_version(), "cpu": cpu_name(), "workers": 1}
+               "python": platform.python_version(), "cpu": cpu_name(), "workers": 1, "write": writing}
         (out / "run.json").write_text(json.dumps(run, indent=2, default=str), encoding="utf-8")
-        summary = {"type": "summary", **counts, "skipped": skipped, "seconds": seconds}
+        summary = {"type": "summary", **counts, "skipped": skipped, "seconds": seconds, "write": writing}
         print(json.dumps(summary) if args.progress == "json" else
               " ".join(f"{key}={value}" for key, value in summary.items() if key != "type"))
-        return 0
+        return 2 if writing["failed"] else 0
     except (OSError, ValueError, RuntimeError) as error:
         print(f"biblocal: {error}", file=sys.stderr)
         return 2

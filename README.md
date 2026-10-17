@@ -3,6 +3,35 @@
 BibLocal reads runners' bib numbers in JPEG race photos on a CPU, offline.
 The default scan writes results to an output folder and preserves the photos.
 
+## Writing keywords
+
+From the repository's configured virtual environment:
+
+```powershell
+.venv/Scripts/biblocal.exe scan "D:\Photos\Race" --start-list "D:\Photos\start.csv"
+.venv/Scripts/biblocal.exe scan "D:\Photos\Race" --start-list "D:\Photos\start.csv" --write embed
+```
+
+The first command writes only results. The second embeds accepted bib keywords
+in JPEGs and keeps `<photo>_original` backups. Reruns keep existing keywords and
+do not duplicate the requested bibs. Review suggestions are never written.
+`--no-backup` disables backups; `--keyword-template "Race-{bib}"` changes flat
+keywords, and `--with-names` adds start-list names.
+
+Use `--write sidecar` to create or update `<stem>.xmp` beside each accepted
+photo. JPEG bytes stay unchanged. Lightroom reads embedded metadata for JPEGs
+and sidecars for RAW files with the same stem. For photos already catalogued,
+use **Metadata > Read Metadata from Files** after writing.
+
+Writing requires the separate ExifTool program. Set `BIBLOCAL_EXIFTOOL` or pass
+`--exiftool "D:\tools\exiftool\exiftool.exe"`. Per-file write failures appear in
+`run.json`, and the command returns exit code 2. Embeds use temporary copies
+under the photo folder and refuse writes when ExifTool warns of metadata loss;
+long legacy IPTC text may require sidecars. Creating a new sidecar in a path
+containing `%` is unsupported. See [writer verification](docs/notes/exiftool-api.md).
+
+Lightroom/digiKam verification is pending at [CHECKPOINT C](docs/notes/k4.md).
+
 ## Accuracy
 
 Current defaults: confidence **0.90**, minimum text-box height **4%** of the

@@ -591,6 +591,14 @@ def test_eval_matches_leading_zeros():
 
 ### Task 8: exiftool keyword writer and `--write` (CHECKPOINT C)
 
+**17 Oct status:** implementation complete; 101 tests passed, including actual
+ExifTool integration tests (none skipped). Test-first regressions cover legacy
+IPTC conversion, duplicate prevention, overlength-text refusal, concurrent
+source edits, backups, unchanged pixels, Unicode paths and sidecar preservation.
+Ten K4 copies are prepared: eight written, two skipped, no failures; all 100 K1
+original hashes and all ten K4 decoded-pixel hashes are unchanged. Human
+Lightroom/digiKam validation remains **PENDING**. Stop here; see `docs/notes/k4.md`.
+
 **Files:**
 - Create: `src/biblocal/exif.py`, `docs/notes/k4.md`
 - Modify: `src/biblocal/cli.py`
@@ -608,10 +616,10 @@ def write_keywords(photo_root: Path, results: list[PhotoResult], mode: str, exif
 ```
 - Only `tagged` results are written. `mode` is `"embed"` or `"sidecar"`, following spec section 9.
 - One exiftool process per batch, driven by an argument file: one argument per line, no quotes. exiftool's per-file output fills `failed`.
-- Options for every file (`-charset filename=utf8` and the IPTC UTF-8 options) go on the command line after `-common_args` (`exiftool -@ ARGFILE -common_args …`), not in the argument file: options do not carry past `-execute`, and `-common_args` does not work inside an argument file (tested with exiftool 13.59).
+- Global filename/text charset options go on the command line after `-common_args` (`exiftool -@ ARGFILE -common_args …`), not in the argument file: options do not carry past `-execute`, and `-common_args` does not work inside an argument file (tested with exiftool 13.59). Embed recodes IPTC in a separate first command, setting `CodedCharacterSet=UTF8` there only; a guarded second command updates keywords. Embeds run on temporary copies and publish only after clean results, preserving originals on truncation warnings. See `docs/notes/exiftool-api.md` for the verified protocol and regression evidence.
 - CLI flags on `scan` (and on `apply` in Task 9): `--write none|sidecar|embed` (default none), `--no-backup`, `--exiftool PATH`, `--keyword-template "{bib}"`, `--with-names`. With `--write` other than none and no exiftool found: exit 2 with an install hint.
 
-- [ ] **Step 1: Write the failing pure tests**:
+- [x] **Step 1: Write the failing pure tests**:
 ```python
 def test_keywords_default():
     assert keywords_for(PhotoResult("a.jpg", "tagged", ["247"])) == (["247"], ["Bib|247"])
@@ -625,15 +633,15 @@ def test_build_args_dedupes_and_ends_with_execute(tmp_path):
     assert a.index("-XMP-dc:Subject-=247") < a.index("-XMP-dc:Subject+=247")
     assert "-IPTC:Keywords+=247" in a and "-overwrite_original" not in a and a[-1] == "-execute"
 ```
-- [ ] **Step 2: Write the failing integration tests.** Mark them `@pytest.mark.exiftool`; skip them when `find_exiftool()` is None.
+- [x] **Step 2: Write the failing integration tests.** Mark them `@pytest.mark.exiftool`; skip them when `find_exiftool()` is None.
   - `test_embed_twice_no_duplicates`: write twice; `exiftool -j -XMP-dc:Subject -IPTC:Keywords` lists `247` exactly once in each tag.
   - `test_embed_keeps_existing_keyword`: keyword `finish` set first → both keywords present afterwards.
   - `test_embed_backup_default_and_no_backup`: `<name>.jpg_original` exists by default and is absent with `backup=False`.
   - `test_embed_pixels_unchanged`: decoded pixels before == after.
   - `test_sidecar_create_and_preserve`: an existing `<stem>.xmp` with `XMP:Rating=3` keeps Rating 3 and gains Subject `247`; a photo without a sidecar gets a new one.
   - `test_non_ascii_path_written`: folder `Lauf 2026`, files `ü 01.jpg` and `ü 02.jpg` written in one batch; both get the keyword.
-- [ ] **Step 3:** Run → FAIL. **Step 4:** Implement. **Step 5:** Run all tests → PASS. Integration tests must run, not skip, on Amit's machine (`BIBLOCAL_EXIFTOOL` is set).
-- [ ] **Step 6: Commit:** `task 8: exiftool writer and --write`.
+- [x] **Step 3:** Run → FAIL. **Step 4:** Implement. **Step 5:** Run all tests → PASS. Integration tests must run, not skip, on Amit's machine (`BIBLOCAL_EXIFTOOL` is set).
+- [x] **Step 6: Commit:** `task 8: exiftool writer and --write`.
 - [ ] **CHECKPOINT C — K4, Amit, about 20 minutes.**
   1. Copy 10 photos from `data/k1` to `data/k4`.
   2. Run `biblocal scan data/k4 --start-list <list> --write embed`.
