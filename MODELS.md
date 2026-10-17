@@ -3,8 +3,9 @@
 Verified 17 Oct 2026 from the installed RapidOCR 3.10.0 wheel and its
 `default_models.yaml` and `MODEL_LICENSES.md`. Files live under
 `.venv/Lib/site-packages/rapidocr/models/`; installation supplies them.
-No model is downloaded by the spike. Task 5 will expose this inventory through
-the app's OCR engine; Task 11 will verify it against the final engine.
+No model is downloaded by the spike or app. Task 5 exposes this inventory
+through `OcrEngine.info` and verifies checksums before use. Task 11 will
+verify it against the final engine.
 
 | File | Upstream/version | Bytes | SHA-256 | License |
 |---|---|---:|---|---|

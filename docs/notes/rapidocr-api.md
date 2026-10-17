@@ -105,8 +105,14 @@ images. A Python audit hook blocks socket connection, DNS and datagram send
 events throughout inference. Recognition succeeded with these guards.
 A separate probe also replaced Requests and `DownloadFile.run` with raising
 stubs and read `4721`, a blank image and a recognition-only image successfully.
-These are application-level offline checks. Windows network adapters were
-not disabled; an airplane-mode smoke test remains a human checkpoint check.
+These were application-level offline checks. Amit subsequently reported the
+airplane-mode smoke test PASS (`1 passed in 6.29s`) at CHECKPOINT A.
+
+Task 5's `OcrEngine` verifies every bundled model's SHA-256 before construction,
+uses explicit local model paths, accepts only PIL images, disables telemetry,
+and explicitly sets CPU-only flags. Its tests block Requests, socket access and
+the package download helper while exercising real recognition. Missing or
+corrupt models produce an installation-repair error; they are never fetched.
 
 ## Licenses
 
