@@ -37,7 +37,7 @@ def scan_folder(folder: Path, start_list: StartList | None, settings: Settings, 
             loaded = load_for_ocr(path, settings.max_side)
             try:
                 hits = engine.read(loaded.image)
-                candidates = extract_candidates(hits, settings, start_list)
+                candidates = extract_candidates(hits, settings, start_list, image_height=loaded.image.height)
             finally:
                 loaded.image.close()
             result = decide(file, candidates, start_list, settings, round((perf_counter() - started) * 1000))

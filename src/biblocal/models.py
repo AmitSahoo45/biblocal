@@ -40,3 +40,4 @@ class Settings:
     max_side: int = 2048
     frequent_share: float = 0.25
     frequent_min_photos: int = 20
+    min_bib_height_share: float = 0.05

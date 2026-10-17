@@ -23,6 +23,18 @@
 > tokens after mapping, calibrate minimum box-height share, retain frequent
 > filtering, and report before/after. No new model. Stop at CHECKPOINT B.
 
+> **Execution status, 17 Oct:** Tasks 2–6 committed (`4e92af1`, `07bf9f9`,
+> `6b2ce01`, `2eee8af`, `51a3911`). Task 7 calibration selects a 5% minimum
+> vertical box-height share; accept stays 0.80. Truth K1 is 71% hit / 0% wrong;
+> range is 71% / 8.33%, dense 71% / 12%. The multi-list <3% target remains
+> unmet. No threshold met it while preserving 70% hits, so the existing
+> confidence default is retained. See `docs/notes/calibration.md`. Task 5b
+> is not triggered by the controlling truth-list PASS. Task 10 remains cut.
+> Fresh K2 on user-reported AC power: PASS, 1.531 s/photo (synthetic 24 MP),
+> matching native comparison 0.569 s/photo. Battery-saver runs were much slower
+> and remain documented alongside the original 2.07 s/photo spike in
+> `docs/notes/bench.md`. CHECKPOINT B requires Amit's GO before Task 8.
+
 > **For agentic workers:** If the superpowers plugin is installed, use superpowers:executing-plans (or superpowers:subagent-driven-development) to run this plan task by task. Otherwise execute the tasks yourself, in order, one per prompt. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** An offline, CPU-only tool that tags race photos with runners' bib numbers as Lightroom-readable keywords, shipped as a Windows zip and a pip package before code freeze (18 Oct 2026, 18:00 IST).
@@ -263,7 +275,7 @@ def test_missing_bib_column(tmp_path):
 **Interfaces:**
 - Consumes: `TextHit`, `Candidate`, `PhotoResult`, `Settings` (Task 2); `StartList`, `Runner`, `normalize_bib` (Task 2).
 - Produces:
-  - `extract_candidates(hits: list[TextHit], settings: Settings, start_list: StartList | None = None) -> list[Candidate]`: candidates sorted by score, descending. When a start list is given, length limits come from it.
+  - `extract_candidates(hits: list[TextHit], settings: Settings, start_list: StartList | None = None, *, image_height: int | None = None) -> list[Candidate]`: candidates sorted by score, descending. When a start list is given, length limits come from it. Task 7 requires positive loaded-image height when the calibrated minimum share is enabled (default 0.05).
   - `decide(file: str, candidates: list[Candidate], start_list: StartList | None, settings: Settings, ms: int = 0) -> PhotoResult`
   - `near_matches(number: str, start_list: StartList, limit: int = 3) -> list[str]`: bibs at edit distance 1 (substitution, insertion, deletion) on normalized values; same-length matches first, then the rest; each group sorted by string.
   - `demote_frequent(results: list[PhotoResult], start_list: StartList | None, settings: Settings) -> list[PhotoResult]`: returns new objects and leaves the input unchanged.
@@ -547,7 +559,7 @@ def bench(folder: Path, settings: Settings, limit: int = 100) -> BenchReport   #
   - `biblocal bench PHOTOS [--limit 100]` prints the report, writes `bench.json` to the output folder, and prints `VERDICT K2=PASS|SLOW|KILL` from `effective_s_per_photo`.
 - `scripts/startlist_from_truth.py TRUTH_CSV OUT_CSV [--dense]` writes a start list containing every bib in truth (the K1 proxy), or with `--dense` every number from 1 to the highest truth bib.
 
-- [ ] **Step 1: Write the failing tests**:
+- [x] **Step 1: Write the failing tests**:
 ```python
 def test_eval_exact_metrics():
     truth = {"a.jpg": ["247"], "b.jpg": ["12"], "c.jpg": []}
@@ -560,12 +572,12 @@ def test_eval_matches_leading_zeros():
     rep = evaluate([PhotoResult("a.jpg", "tagged", ["7"])], {"a.jpg": ["007"]})
     assert (rep.hit_rate, rep.wrong_rate) == (1.0, 0.0)
 ```
-- [ ] **Step 2:** Run → FAIL. **Step 3:** Implement. **Step 4:** Run → PASS.
-- [ ] **Step 5: Calibrate on `data/k1`** with the proxy start list.
+- [x] **Step 2:** Run → FAIL. **Step 3:** Implement. **Step 4:** Run → PASS.
+- [x] **Step 5: Calibrate on `data/k1`** with the proxy start list.
   - Run scan + eval for accept ∈ {0.70, 0.80, 0.90}, with both the truth and the dense proxy lists, and put the table in `docs/notes/calibration.md`.
   - Pick the lowest accept with wrong < 0.03 on both lists. Change the `Settings` default only if that value differs from 0.80, and say so.
-- [ ] **Step 6: Bench:** `biblocal bench data/k2 --limit 50`. Put the numbers in `docs/notes/bench.md`.
-- [ ] **Step 7: Commit:** `task 7: eval, bench, calibration`.
+- [x] **Step 6: Bench:** `biblocal bench data/k2 --limit 50`. Put the numbers in `docs/notes/bench.md`.
+- [x] **Step 7: Commit:** `task 7: eval, bench, calibration`.
 - [ ] **CHECKPOINT B — stop for Amit.** Report K1 (truth and dense lists) and K2 from the real pipeline, the calibration choice, and whether Task 5b or Task 10 is now required.
 
 ---

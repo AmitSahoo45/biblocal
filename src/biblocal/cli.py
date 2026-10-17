@@ -11,7 +11,7 @@ from pathlib import Path
 from time import perf_counter
 
 from . import __version__
-from .csv_io import write_results_csv
+from .csv_io import read_bib_table, read_results_csv, write_results_csv
 from .models import Settings
 from .ocr import OcrEngine
 from .pipeline import cpu_name, list_photos, scan_folder
@@ -47,10 +47,33 @@ def main(argv: list[str] | None = None) -> int:
     scan.add_argument("--progress", choices=["text", "json"], default="text")
     scan.add_argument("--no-review", action="store_true")
     _add_settings(scan)
+    evaluation = commands.add_parser("eval", help="Evaluate results against labelled truth")
+    evaluation.add_argument("results", type=Path)
+    evaluation.add_argument("--truth", type=Path, required=True)
+    benchmark = commands.add_parser("bench", help="Measure one-worker CPU decode and OCR speed")
+    benchmark.add_argument("photos", type=Path)
+    benchmark.add_argument("--limit", type=int, default=100)
+    _add_settings(benchmark)
     args = parser.parse_args(argv)
     try:
+        if args.command == "eval":
+            from .evaluate import evaluate, k1_verdict
+            report = evaluate(read_results_csv(args.results), read_bib_table(args.truth))
+            print(f"photos={report.photos} readable={report.readable} hit_rate={report.hit_rate:.6f} "
+                  f"wrong_rate={report.wrong_rate:.6f} review_rate={report.review_rate:.6f}")
+            print(f"VERDICT K1={k1_verdict(report)}")
+            return 0
         settings = _settings(args)
         folder = args.photos.resolve()
+        if args.command == "bench":
+            from .bench import bench, k2_verdict
+            report = bench(folder, settings, args.limit)
+            out = folder.with_name(folder.name + "_biblocal")
+            out.mkdir(parents=True, exist_ok=True)
+            (out / "bench.json").write_text(json.dumps(asdict(report), indent=2), encoding="utf-8")
+            print(" ".join(f"{key}={value}" for key, value in asdict(report).items()))
+            print(f"VERDICT K2={k2_verdict(report.effective_s_per_photo)}")
+            return 0
         _, skipped = list_photos(folder)
         start_list = load_start_list(args.start_list) if args.start_list is not None else None
         out = args.out.resolve() if args.out is not None else folder.with_name(folder.name + "_biblocal")

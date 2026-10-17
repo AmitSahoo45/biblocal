@@ -1,10 +1,12 @@
 import pytest
+from dataclasses import replace
 
 from biblocal.bibs import decide, demote_frequent, extract_candidates, near_matches
 from biblocal.models import Settings, TextHit
 from biblocal.startlist import Runner, StartList
 
-S = Settings()
+# Token/decision unit tests isolate height; the geometric tests enable it below.
+S = Settings(min_bib_height_share=0)
 BOX = ((0, 0), (10, 0), (10, 10), (0, 10))
 
 
@@ -88,3 +90,24 @@ def test_empty_start_list_never_accepts_and_thresholds_are_inclusive():
     assert decide("a.jpg", cs, StartList([]), S).bibs == []
     assert decide("a.jpg", cs, None, S).bibs == ["7"]
     assert decide("a.jpg", extract_candidates([hit("7", .5)], S), None, S).status == "review"
+
+
+def test_remaining_letters_reject_entire_token_after_mapping():
+    hits = [hit("A247"), hit("247th"), hit("2O7A"), hit("247é"), hit("2O7")]
+    assert [c.number for c in extract_candidates(hits, S)] == ["207"]
+
+
+def test_box_height_share_inclusive_and_filtered_before_deduplication():
+    settings = replace(S, min_bib_height_share=.02)
+    small = TextHit("247", .99, ((0, 0), (40, 0), (40, 9), (0, 9)))
+    boundary = TextHit("247", .90, BOX)
+    candidates = extract_candidates([small, boundary], settings, image_height=500)
+    assert [(c.number, c.score) for c in candidates] == [("247", .90)]
+    assert extract_candidates([boundary], settings, image_height=1000) == []
+
+
+def test_height_filter_requires_valid_image_height():
+    settings = replace(S, min_bib_height_share=.02)
+    for height in (None, 0, -1):
+        with pytest.raises(ValueError, match="image_height"):
+            extract_candidates([hit("247")], settings, image_height=height)

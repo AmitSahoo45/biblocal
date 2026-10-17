@@ -9,15 +9,22 @@ _MAP = str.maketrans({"O": "0", "o": "0", "I": "1", "l": "1", "|": "1",
                      "S": "5", "s": "5", "B": "8", "Z": "2", "z": "2"})
 
 
-def extract_candidates(hits: list[TextHit], settings: Settings, start_list: StartList | None = None) -> list[Candidate]:
+def extract_candidates(hits: list[TextHit], settings: Settings, start_list: StartList | None = None,
+                       *, image_height: int | None = None) -> list[Candidate]:
+    if settings.min_bib_height_share > 0 and (image_height is None or image_height <= 0):
+        raise ValueError("image_height must be positive when filtering small bib boxes")
     minimum, maximum = ((start_list.min_len, start_list.max_len) if start_list is not None
                         else (settings.min_len, settings.max_len))
     found = {}
     for hit in hits:
+        if image_height and (max(y for _, y in hit.box) - min(y for _, y in hit.box)) / image_height < settings.min_bib_height_share:
+            continue
         for token in hit.text.split():
             if ":" in token or "." in token or token.upper().endswith(("K", "KM")):
                 continue
             mapped_token = token.translate(_MAP) if sum(c in "0123456789" for c in token) * 2 >= len(token) else token
+            if any(character.isalpha() for character in mapped_token):
+                continue
             mapped = mapped_token != token
             score = hit.score * .9 if mapped else hit.score
             for number in re.findall(r"[0-9]+", mapped_token):

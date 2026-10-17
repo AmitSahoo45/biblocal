@@ -59,3 +59,13 @@ def test_read_bib_table_preserves_zeros_empty_rows_and_rejects_duplicates(tmp_pa
     path.write_text("file,bibs\na.jpg,7\na.jpg,8\n", encoding="utf-8")
     with pytest.raises(ValueError, match="a.jpg"):
         read_bib_table(path)
+
+
+def test_scan_passes_loaded_height_to_candidate_filter(tmp_path):
+    from types import SimpleNamespace
+    from PIL import Image
+    from biblocal.models import TextHit
+    Image.new("RGB", (100, 200), "white").save(tmp_path / "a.jpg")
+    engine = SimpleNamespace(read=lambda image: [TextHit("247", .99, ((0, 0), (30, 0), (30, 10), (0, 10)))])
+    assert scan_folder(tmp_path, None, Settings(min_bib_height_share=.1), engine)[0].status == "none"
+    assert scan_folder(tmp_path, None, Settings(min_bib_height_share=.04), engine)[0].bibs == ["247"]
