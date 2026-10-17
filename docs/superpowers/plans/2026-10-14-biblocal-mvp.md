@@ -1,5 +1,12 @@
 # BibLocal MVP Implementation Plan
 
+> **Latest ruling, 17 Oct 2026:** CHECKPOINT B GO received for Task 8 after
+> changing defaults to accept 0.90 and minimum height share 0.04, confirming
+> truth-list CLI hit 80% / wrong 0%, and committing. README must label range
+> as realistic, truth as best case, disclose set2 hit 69.70%, in-sample data,
+> and power conditions for all speed figures. Task 5b stays deferred; Task 10
+> stays cut. Stop at CHECKPOINT C after Task 8.
+
 > **Accepted execution scope, 17 Oct 2026:** Tasks 1, 2–6 (5b only if K1 is
 > WEAK), 7, 8, 9, 11, with stops at CHECKPOINTS A/B/C. Tasks 10, 12, 13 and
 > the Task 14 script are cut. Report single-worker speed; README gives pip
@@ -275,7 +282,7 @@ def test_missing_bib_column(tmp_path):
 **Interfaces:**
 - Consumes: `TextHit`, `Candidate`, `PhotoResult`, `Settings` (Task 2); `StartList`, `Runner`, `normalize_bib` (Task 2).
 - Produces:
-  - `extract_candidates(hits: list[TextHit], settings: Settings, start_list: StartList | None = None, *, image_height: int | None = None) -> list[Candidate]`: candidates sorted by score, descending. When a start list is given, length limits come from it. Task 7 requires positive loaded-image height when the calibrated minimum share is enabled (default 0.05).
+  - `extract_candidates(hits: list[TextHit], settings: Settings, start_list: StartList | None = None, *, image_height: int | None = None) -> list[Candidate]`: candidates sorted by score, descending. When a start list is given, length limits come from it. Task 7 requires positive loaded-image height when the calibrated minimum share is enabled (default 0.04 after CHECKPOINT B).
   - `decide(file: str, candidates: list[Candidate], start_list: StartList | None, settings: Settings, ms: int = 0) -> PhotoResult`
   - `near_matches(number: str, start_list: StartList, limit: int = 3) -> list[str]`: bibs at edit distance 1 (substitution, insertion, deletion) on normalized values; same-length matches first, then the rest; each group sorted by string.
   - `demote_frequent(results: list[PhotoResult], start_list: StartList | None, settings: Settings) -> list[PhotoResult]`: returns new objects and leaves the input unchanged.

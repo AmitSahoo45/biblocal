@@ -33,11 +33,11 @@ class PhotoResult:
 
 @dataclass(frozen=True)
 class Settings:
-    accept: float = 0.80
+    accept: float = 0.90
     review: float = 0.50
     min_len: int = 1
     max_len: int = 5
     max_side: int = 2048
     frequent_share: float = 0.25
     frequent_min_photos: int = 20
-    min_bib_height_share: float = 0.05
+    min_bib_height_share: float = 0.04

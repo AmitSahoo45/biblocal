@@ -6,7 +6,7 @@ from biblocal.models import Settings, TextHit
 from biblocal.startlist import Runner, StartList
 
 # Token/decision unit tests isolate height; the geometric tests enable it below.
-S = Settings(min_bib_height_share=0)
+S = Settings(accept=.80, min_bib_height_share=0)
 BOX = ((0, 0), (10, 0), (10, 10), (0, 10))
 
 
@@ -111,3 +111,13 @@ def test_height_filter_requires_valid_image_height():
     for height in (None, 0, -1):
         with pytest.raises(ValueError, match="image_height"):
             extract_candidates([hit("247")], settings, image_height=height)
+
+
+@pytest.mark.parametrize("score,height,status", [(.89, 60, "review"), (.90, 40, "tagged"), (.99, 39, "none")])
+def test_selected_defaults_accept_confident_bibs_at_four_percent(score, height, status):
+    settings = Settings()
+    text = TextHit("247", score, ((0, 0), (100, 0), (100, height), (0, height)))
+    candidates = extract_candidates([text], settings, image_height=1000)
+    result = decide("a.jpg", candidates, None, settings)
+    assert result.status == status
+    assert result.bibs == (["247"] if status == "tagged" else [])
