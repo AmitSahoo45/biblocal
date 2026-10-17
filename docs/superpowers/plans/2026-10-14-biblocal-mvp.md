@@ -734,6 +734,14 @@ def test_apply_rejects_bad_bib():
 
 ### Task 11: README, MODELS.md, licences
 
+**18 Oct implementation status:** complete under the reduced pip-only scope.
+MIT copyright is Amit Sahoo. Task 11 checks: four expected failures first,
+then five passing; final full suite 126 passed. Built and tested the installed
+wheel with runtime network/download calls blocked. Complete vendor license
+texts and model inventory are included in the wheel. ExifTool and PyInstaller
+are not redistributed. Verification and remaining human checks are recorded
+in `docs/notes/release-check.md`. Stop after this task as requested.
+
 **Files:**
 - Create: `README.md`, `MODELS.md`, `THIRD_PARTY_NOTICES.md`, `LICENSE` (MIT; ask Amit for the name on the copyright line)
 - Test: `tests/test_docs.py`
@@ -755,7 +763,7 @@ def test_apply_rejects_bad_bib():
   - Add exiftool: Phil Harvey; same terms as Perl (Artistic License or GPL); shipped unmodified as a separate program in the Windows zip.
   - Add the PyInstaller bootloader notice.
 
-- [ ] **Step 1: Failing test**:
+- [x] **Step 1: Failing test**:
 ```python
 def test_models_md_has_every_model_sha256(engine):
     text = Path("MODELS.md").read_text(encoding="utf-8")
@@ -768,8 +776,8 @@ def test_notices_cover_bundled_copyleft():
     text = Path("THIRD_PARTY_NOTICES.md").read_text(encoding="utf-8")
     assert all(s in text for s in ("FFmpeg", "GEOS", "LGPL-2.1", "MPL-2.0"))
 ```
-- [ ] **Step 2:** Run → FAIL. **Step 3:** Write the documents. **Step 4:** Run → PASS.
-- [ ] **Step 5: Commit:** `task 11: README, models, notices`.
+- [x] **Step 2:** Run → FAIL. **Step 3:** Write the documents. **Step 4:** Run → PASS.
+- [x] **Step 5: Commit:** `task 11: README, models, notices`.
 
 ---
 

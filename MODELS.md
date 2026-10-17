@@ -1,11 +1,13 @@
 # Bundled OCR models
 
-Verified 17 Oct 2026 from the installed RapidOCR 3.10.0 wheel and its
+Verified again 18 Oct 2026 against the final engine's inventory and the
+installed RapidOCR 3.10.0 wheel and its
 `default_models.yaml` and `MODEL_LICENSES.md`. Files live under
 `.venv/Lib/site-packages/rapidocr/models/`; installation supplies them.
-No model is downloaded by the spike or app. Task 5 exposes this inventory
-through `OcrEngine.info` and verifies checksums before use. Task 11 will
-verify it against the final engine.
+No model is downloaded by the app. `OcrEngine.info` exposes this inventory;
+the engine verifies all three checksums before use. The distribution's model
+attribution notice and Apache-2.0 text are reproduced in
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 | File | Upstream/version | Bytes | SHA-256 | License |
 |---|---|---:|---|---|
@@ -23,4 +25,10 @@ Sources recorded in the installed release manifest:
 Upstream weights are copyright Baidu and/or the applicable PaddleOCR rights
 holders. RapidOCR's conversion and packaging code is copyright RapidOCR
 Authors. The package model notice identifies all three artifacts as Apache-2.0.
-The classifier ships with the dependency but is disabled during spike timing.
+The classifier ships with the dependency and is checksum-verified, but is
+disabled during both normal scans and benchmarks. The model files themselves
+are supplied by the installed RapidOCR wheel; they are not committed here.
+
+RapidOCR's bundled model-license notice contains older v3.9.2 source URLs
+with these same hashes and names `default_models.yaml` as authoritative.
+The URLs above are from the installed 3.10.0 manifest.
