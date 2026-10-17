@@ -1,6 +1,6 @@
 # Task 1 — CHECKPOINT A
 
-Measured 17 Oct 2026. **K1 PASS; K2 SLOW. Awaiting Amit's GO.**
+Measured 17 Oct 2026. **K1 PASS; K2 SLOW accepted; GO received 17 Oct.**
 K1's dense-list result is weak: correct OCR of unrelated numbers produces many
 wrong tags. A truth-derived start list is an optimistic proxy, not proof of
 accuracy on a real event's full start list.
@@ -132,16 +132,21 @@ the labels were not edited after seeing model output.
 - CPU package and actual CPU session providers verified; models use explicit
   local paths. Recognition and both timed workloads passed with Python network
   access blocked. See [rapidocr-api.md](rapidocr-api.md).
-- **Windows airplane-mode verification is still pending.** Adapters were not
-  disabled. To finish this human check, turn Wi-Fi off, run
-  `.venv/Scripts/python.exe -m pytest tests/test_smoke_ocr.py -q`, then restore
-  networking and record the result here. Application-level network blocking
-  is the automated evidence; it is not claimed as a physical network-off run.
+- **Airplane-mode check: PASS, reported by Amit on 17 Oct 2026.** In response
+  to the airplane-mode result clarification, Amit reported terminal output
+  `1 passed in 6.29s`. This is the user-run smoke check, not an agent-observed
+  network-adapter state. The agent's separate application-level blocking
+  checks also passed.
 - certifi MPL-2.0 exception was explicitly approved, unmodified only; rules and
   its notice/full license text were updated. No extra application dependency
   was added. Full remaining notices stay in Task 11.
 - Task 5b is not triggered by the controlling K1 verdict. Dense-list wrong tags
   must be reported and assessed in Task 7 calibration. Task 10 remains cut
   despite SLOW; single-worker performance will be reported honestly.
-- **Stop at CHECKPOINT A. Await Amit's GO before Task 2.** No app task beyond
-  Task 1 has been implemented.
+- **CHECKPOINT A GO received 17 Oct.** Continue Tasks 2–7, stopping at B.
+  K2 SLOW is accepted; Task 10 stays cut. README must describe the measured
+  2.07 s/photo (about 34 minutes/1,000), single worker, synthetic 24 MP set.
+  Task 7 adds each RBNR set's min-to-max bib range list alongside truth/dense
+  lists. If range wrong rate is at least 3%, use at most one hour for the
+  authorized deterministic token/relative-box-height rules, keep the frequent
+  filter, and report before/after. No new model.

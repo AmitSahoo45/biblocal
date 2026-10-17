@@ -12,10 +12,16 @@
 > **Task 1 status, 17 Oct:** implemented; 19 synthetic tests passed. K1 PASS
 > (88% hit, 0.8% wrong with truth-bib list; dense-list wrong 27.49%). K2 SLOW
 > (2.066 s/photo on upscaled RBNR; matching originals 0.696 s/photo), one worker.
-> CHECKPOINT A awaits GO. Application-level network blocking passed; physical
-> network-off smoke remains pending. Details: `docs/notes/spike-k1k2.md`.
+> CHECKPOINT A GO received; K2 SLOW accepted. Amit reported airplane-mode smoke
+> PASS (`1 passed in 6.29s`). Details: `docs/notes/spike-k1k2.md`.
 > certifi's MPL-2.0 exception was approved by Amit, unmodified only; include its
 > source link and full license text in `THIRD_PARTY_NOTICES.md`.
+
+> **Task 7 amendment from Amit:** Evaluate truth, per-RBNR-set min-to-max range,
+> and dense start lists. If range wrong rate is >=3%, spend at most one hour
+> on deterministic rules in bibs.py: reject period/colon/remaining-letter
+> tokens after mapping, calibrate minimum box-height share, retain frequent
+> filtering, and report before/after. No new model. Stop at CHECKPOINT B.
 
 > **For agentic workers:** If the superpowers plugin is installed, use superpowers:executing-plans (or superpowers:subagent-driven-development) to run this plan task by task. Otherwise execute the tasks yourself, in order, one per prompt. Steps use checkbox (`- [ ]`) syntax for tracking.
 
