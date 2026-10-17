@@ -1,5 +1,22 @@
 # BibLocal MVP Implementation Plan
 
+> **Accepted execution scope, 17 Oct 2026:** Tasks 1, 2–6 (5b only if K1 is
+> WEAK), 7, 8, 9, 11, with stops at CHECKPOINTS A/B/C. Tasks 10, 12, 13 and
+> the Task 14 script are cut. Report single-worker speed; README gives pip
+> instructions. MIT copyright: Amit Sahoo. K1 uses a fixed 100-photo RBNR
+> sample converted from its text labels. Amit has no 24 MP camera JPEGs:
+> K2 instead uses 20 RBNR copies resized to 6000×4000 with Pillow LANCZOS,
+> JPEG quality 92, plus timing on their original RBNR images. These copies
+> are timing-only and must be described as upscaled RBNR, not camera originals.
+
+> **Task 1 status, 17 Oct:** implemented; 19 synthetic tests passed. K1 PASS
+> (88% hit, 0.8% wrong with truth-bib list; dense-list wrong 27.49%). K2 SLOW
+> (2.066 s/photo on upscaled RBNR; matching originals 0.696 s/photo), one worker.
+> CHECKPOINT A awaits GO. Application-level network blocking passed; physical
+> network-off smoke remains pending. Details: `docs/notes/spike-k1k2.md`.
+> certifi's MPL-2.0 exception was approved by Amit, unmodified only; include its
+> source link and full license text in `THIRD_PARTY_NOTICES.md`.
+
 > **For agentic workers:** If the superpowers plugin is installed, use superpowers:executing-plans (or superpowers:subagent-driven-development) to run this plan task by task. Otherwise execute the tasks yourself, in order, one per prompt. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** An offline, CPU-only tool that tags race photos with runners' bib numbers as Lightroom-readable keywords, shipped as a Windows zip and a pip package before code freeze (18 Oct 2026, 18:00 IST).

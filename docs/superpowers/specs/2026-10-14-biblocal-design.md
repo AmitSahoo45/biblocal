@@ -48,7 +48,7 @@ Non-functional (exact values):
 - N4 Accuracy on readable photos with a start list: hit rate ≥ 70% and wrong-tag rate < 3%. Kill below a 50% hit rate.
 - N5 Photos are unchanged unless `--write` is passed; pixel data is unchanged even then.
 - N6 Re-running never duplicates keywords and keeps keywords that were already there.
-- N7 Every shipped dependency and model has a permissive licence, except the approved MPL-2.0 (tqdm) and LGPL-2.1 libraries bundled in opencv-python-headless (FFmpeg) and Shapely (GEOS), which ship with their notices and licence texts. exiftool ships unmodified as a separate program, with its notice.
+- N7 Every shipped dependency and model has a permissive licence, except the approved MPL-2.0 (tqdm; certifi unmodified only, approved 17 Oct 2026) and LGPL-2.1 libraries bundled in opencv-python-headless (FFmpeg) and Shapely (GEOS), which ship with their notices and licence texts. Include certifi's source link, https://github.com/certifi/python-certifi. exiftool ships unmodified as a separate program, with its notice.
 - N8 Windows 10/11 first. Mac and Linux through pip, marked "untested" until someone tests them.
 
 ## 5. Approaches considered

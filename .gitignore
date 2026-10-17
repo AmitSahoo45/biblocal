@@ -1,0 +1,13 @@
+.venv/
+data/
+*_biblocal/
+dist/
+build/
+__pycache__/
+.pytest_cache/
+pytest-cache-files-*/
+.pytest_tmp/
+.tmp/
+.superpowers/
+*.egg-info/
+*_original
