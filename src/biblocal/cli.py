@@ -22,11 +22,14 @@ from .startlist import load_start_list
 
 def _settings(args) -> Settings:
     settings = Settings(accept=args.accept, review=args.review, min_len=args.min_len,
-                        max_len=args.max_len, max_side=args.max_side)
+                        max_len=args.max_len, max_side=args.max_side,
+                        min_bib_height_share=getattr(args, "min_bib_height", Settings.min_bib_height_share))
     if not .5 <= settings.review <= settings.accept <= 1:
         raise ValueError("require 0.50 <= review <= accept <= 1; OCR filters scores below 0.50")
     if settings.min_len < 1 or settings.max_len < settings.min_len or settings.max_side < 1:
         raise ValueError("length bounds and max-side must be positive and ordered")
+    if not 0 <= settings.min_bib_height_share <= 1:
+        raise ValueError("--min-bib-height must be a finite share between 0 and 1")
     return settings
 
 
@@ -86,6 +89,8 @@ def main(argv: list[str] | None = None) -> int:
     scan.add_argument("--out", type=Path)
     scan.add_argument("--progress", choices=["text", "json"], default="text")
     scan.add_argument("--no-review", action="store_true")
+    scan.add_argument("--min-bib-height", type=float, default=Settings.min_bib_height_share,
+                      help="Minimum OCR box height / upright image height (0-1; default: %(default)s)")
     _add_writer(scan)
     _add_settings(scan)
     apply = commands.add_parser("apply", help="Validate and apply manually confirmed corrections")

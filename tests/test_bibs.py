@@ -113,8 +113,8 @@ def test_height_filter_requires_valid_image_height():
             extract_candidates([hit("247")], settings, image_height=height)
 
 
-@pytest.mark.parametrize("score,height,status", [(.89, 60, "review"), (.90, 40, "tagged"), (.99, 39, "none")])
-def test_selected_defaults_accept_confident_bibs_at_four_percent(score, height, status):
+@pytest.mark.parametrize("score,height,status", [(.89, 30, "review"), (.90, 20, "tagged"), (.99, 19, "none")])
+def test_selected_defaults_accept_confident_bibs_at_two_percent(score, height, status):
     settings = Settings()
     text = TextHit("247", score, ((0, 0), (100, 0), (100, height), (0, height)))
     candidates = extract_candidates([text], settings, image_height=1000)

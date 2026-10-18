@@ -1,5 +1,13 @@
 # BibLocal MVP Implementation Plan
 
+> **18 Oct demo amendment:** Amit authorized `scan --min-bib-height` and a
+> default share of 0.02 after reporting 10/30 tagged at 0.04 and 26/30 at
+> 0.02 on friends' race photos. Keep accept 0.90 and all other guards.
+> Recalibrate RBNR at both heights, scan `data/demo` with the supplied
+> 30-bib start list, report per-photo results, update README honestly, test,
+> commit and push before 18:00 IST. This supersedes the earlier 4% default
+> and stop/freeze-candidate instructions. No photos or data enter Git.
+
 > **Latest ruling, 18 Oct 2026:** K4 PASS in digiKam 9.1.0: Bib > 2605
 > matched exactly set1_12.JPG and set1_14.JPG, hierarchy visible. GO received
 > for Task 9 then Task 11; list remaining work before 18:00 IST and stop.
@@ -286,7 +294,7 @@ def test_missing_bib_column(tmp_path):
 **Interfaces:**
 - Consumes: `TextHit`, `Candidate`, `PhotoResult`, `Settings` (Task 2); `StartList`, `Runner`, `normalize_bib` (Task 2).
 - Produces:
-  - `extract_candidates(hits: list[TextHit], settings: Settings, start_list: StartList | None = None, *, image_height: int | None = None) -> list[Candidate]`: candidates sorted by score, descending. When a start list is given, length limits come from it. Task 7 requires positive loaded-image height when the calibrated minimum share is enabled (default 0.04 after CHECKPOINT B).
+  - `extract_candidates(hits: list[TextHit], settings: Settings, start_list: StartList | None = None, *, image_height: int | None = None) -> list[Candidate]`: candidates sorted by score, descending. When a start list is given, length limits come from it. Task 7 requires positive loaded-image height when the minimum share is enabled (default 0.02 after the 18 Oct demo amendment).
   - `decide(file: str, candidates: list[Candidate], start_list: StartList | None, settings: Settings, ms: int = 0) -> PhotoResult`
   - `near_matches(number: str, start_list: StartList, limit: int = 3) -> list[str]`: bibs at edit distance 1 (substitution, insertion, deletion) on normalized values; same-length matches first, then the rest; each group sorted by string.
   - `demote_frequent(results: list[PhotoResult], start_list: StartList | None, settings: Settings) -> list[PhotoResult]`: returns new objects and leaves the input unchanged.

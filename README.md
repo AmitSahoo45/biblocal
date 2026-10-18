@@ -72,22 +72,22 @@ Eval and bench do not write photo metadata.
 
 ## Accuracy and limits
 
-Defaults: accept **0.90**, review **0.50**, minimum box height **4%** of upright image height, maximum side **2048 pixels**.
+Defaults: accept **0.90**, review **0.50**, minimum box height **2%** of upright image height, maximum side **2048 pixels**. Override with `scan --min-bib-height 0.04`; finite shares 0–1 are valid, and 0 disables the height rule.
 The CLI requires `0.50 <= review <= accept <= 1`. OCR filters lower scores. Plain code checks digits, length, start-list membership, height and frequent numbers.
-Results are **in-sample: 100 RBNR photos, no held-out set**. All have annotated bibs; none exceeds 1.07 MP. Bib-free and native high-resolution photos were not evaluated.
+K1 results are **in-sample: 100 RBNR photos, no held-out set**. All have annotated bibs; none exceeds 1.07 MP. K1 does not measure bib-free or high-resolution camera accuracy.
 
-| Start list | Meaning | Photo hit rate | Wrong accepted tags |
-|---|---|---:|---:|
-| Range | Realistic proxy: each event's lowest through highest truth bib | 80% | **7.76% (9/116)** |
-| Truth | Best case: only bibs in the labelled sample | 80% | 0% (0/107) |
-| Dense | Stress test: every number from 1 to 90,135 | 80% | 13.71% (17/124) |
+| Start list | Meaning | Hit at 2% | Wrong tags at 2% | Hit at 4% | Wrong tags at 4% |
+|---|---|---:|---:|---:|---:|
+| Range | Realistic proxy: each event's lowest through highest truth bib | 87% | **19.08% (29/152)** | 80% | **7.76% (9/116)** |
+| Truth | Best case: only bibs in the labelled sample | 87% | 0.81% (1/124) | 80% | 0% (0/107) |
+| Dense | Stress test: every number from 1 to 90,135 | 87% | 23.13% (37/160) | 80% | 13.71% (17/124) |
 
 A hit means at least one correct tag, not every runner found. Wrong rate is wrong tags divided by accepted tags, not photos.
 Range lists fail the **less-than-3% wrong** target. Truth-list results do not represent real start lists.
-
-The height rule misses small bibs. At accept 0.90, set2 falls from **29/33 (87.88%) without it to 23/33 (69.70%) at 4%**.
+**30 real photos: 23/30 tagged** with the supplied start list; 4 review, 3 none, 0 errors. All 30 listed bibs were found across those 23 photos. Tagged count is not an accuracy rate. See [demo results](docs/notes/demo-height-002.md).
+The height rule misses small bibs. At accept 0.90, set2 hits are **29/33 (87.88%) without it, 23/33 (69.70%) at 4%, and 29/33 (87.88%) at 2%**.
 Blurred, obscured and angled bibs can be missed. Human review is needed. The small-bib fallback (Task 5b) is deferred.
-Changing 5% / 0.80 to 4% / 0.90 raised hits **71% to 80%**. Range wrong fell **8.33% to 7.76%**. Dense wrong rose **12% to 13.71%**. See [calibration](docs/notes/calibration.md).
+Earlier, changing 5% / 0.80 to 4% / 0.90 raised hits **71% to 80%**. Range wrong fell **8.33% to 7.76%**. Dense wrong rose **12% to 13.71%**. The new 2% setting recovers more bibs but accepts more wrong tags. See [calibration](docs/notes/calibration.md).
 
 Timings use **one CPU worker**, default OCR thread counts and an Intel Core i7-13650HX. The worker pool (Task 10) is cut.
 K2 uses **20 upscaled RBNR JPEGs**, 6000x4000, quality 92: synthetic 24 MP, not camera originals. They are never used for accuracy.

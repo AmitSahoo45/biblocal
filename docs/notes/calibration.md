@@ -4,7 +4,30 @@
 The authorized deterministic rules improve errors but do not meet the <3%
 wrong-tag target on realistic or dense start lists. No new model was added.
 
-## Current selection after CHECKPOINT B GO
+## Current selection: 2% after the 18 Oct demo test
+
+Amit authorized a **0.02 minimum height share**, keeping **accept 0.90**,
+after reporting better recovery of bibs in 30 friends' race photos. The new
+`scan --min-bib-height` option accepts finite shares from 0 through 1; zero
+disables the height filter. Other validation and review rules stay unchanged.
+
+The same 100-photo RBNR OCR cache was replayed with fingerprint validation.
+No model or photo changed. At accept 0.90:
+
+| Start list | 2% hit | 2% wrong / accepted | 2% wrong rate | 4% hit | 4% wrong / accepted | 4% wrong rate |
+|---|---:|---:|---:|---:|---:|---:|
+| Truth | 87% | 1/124 | 0.81% | 80% | 0/107 | 0% |
+| Range | 87% | 29/152 | 19.08% | 80% | 9/116 | 7.76% |
+| Dense | 87% | 37/160 | 23.13% | 80% | 17/124 | 13.71% |
+
+Set2 recovers six photos: **23/33 (69.70%) at 4% to 29/33 (87.88%) at 2%**.
+Set3 recovers one; set1 is unchanged. The additional recall costs more false
+tags, including one on the optimistic truth list. Range and dense lists still
+fail the less-than-3% target. These are in-sample results with no held-out set.
+See [the full 2%/4% comparison](height-002-calibration.md) for counts, commands
+and verification. Earlier sections below remain historical evidence.
+
+## Previous selection after CHECKPOINT B GO (4%, superseded)
 
 On 17 Oct Amit selected **accept 0.90 and minimum height share 0.04**,
 superseding the initial 0.80 / 0.05 selection recorded below. This uses the

@@ -4,7 +4,48 @@ Recorded 18 Oct 2026. Code freeze: **Sunday 18 Oct, 18:00 IST**.
 Tasks 9 and 11 are implemented. K4 passed in digiKam 9.1.0, reported by Amit;
 see [K4](k4.md). No original RBNR photo was written during this work.
 
-## Verification completed
+## 18 Oct amendment: configurable 2% minimum height
+
+Amit authorized `scan --min-bib-height`, a new default of `0.02` and a
+commit and push before 18:00 IST. Accept remains `0.90`. No model,
+dependency, worker or metadata-writing behavior changed.
+This amendment supersedes the earlier 4% freeze candidate below.
+
+- Test-first check: **10 failed, 1 passed** before implementation;
+  **11 passed** after implementation. Tests cover the default, explicit
+  4%, the 0 and 1 bounds, rejection of invalid/non-finite shares, saved
+  settings and source-photo preservation.
+- Full regression suite for the intended release contents: **134 passed
+  in 270.73 seconds**, with no skips. This includes the existing CPU OCR,
+  offline, ExifTool and local Edge checks.
+- Tests ran in `.tmp/height-002-verification`, an isolated D: copy of
+  committed files overlaid with this amendment. Imports were verified to
+  come from that copy, and changed source/test files matched the working
+  tree byte for byte.
+- Two pre-existing working-tree deletions in `THIRD_PARTY_NOTICES.md`
+  remove upstream attribution text and fail the notice-preservation test.
+  They are excluded from this amendment; its tested release contents
+  retain the complete committed notices. No test was weakened.
+- RBNR rules were recalibrated on validated cached OCR at both 2% and 4%.
+  At 2%, all three lists reach **87% hit**. Wrong rates are **0.81% truth,
+  19.08% range and 23.13% dense**. At 4%, all reach **80% hit**, with
+  **0%, 7.76% and 13.71% wrong**, respectively. These are in-sample
+  results on 100 photos, with no held-out set.
+- The fresh CPU preview scan of 30 demo JPEGs with Amit's supplied start
+  list returned **23 tagged, 4 review, 3 none, 0 errors**. All 30 listed
+  bibs occur across those 23 tagged photos. This is coverage, not a
+  measured accuracy rate. All 31 source-file hashes remained unchanged.
+- README retains 119 lines and reports both calibration settings, the
+  demo counts, small-bib misses and the higher false-positive rate.
+
+See [calibration evidence](height-002-calibration.md) and
+[every demo photo's result](demo-height-002.md).
+The earlier wheel and physical network-off check below describe the
+previous application version; neither was repeated for this amendment.
+The automated offline test passed as part of the new 134-test suite.
+No new speed benchmark was run.
+
+## Earlier Task 11 verification
 
 - Task 11 tests first reported **4 failed, 1 passed** for the missing
   documentation/license requirements, then **5 passed** after implementation.
@@ -129,7 +170,7 @@ ten-photo functional smoke result; power condition was not supplied. It does
 not replace the documented K2 benchmark. Private evidence is in
 `data/k4_biblocal/final-offline/` and `.tmp/final-check-inspection.json`.
 
-## Freeze readiness
+## Earlier freeze readiness (superseded by the amendment above)
 
 **Both final acceptance checks pass.** No implementation fixes or acceptance
 checks remain in the reduced scope. The commit recording this completion is
