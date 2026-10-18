@@ -41,7 +41,7 @@ Private verification details: `.tmp/package-smoke/verification.json`.
 The build and smoke files are git-ignored. These checks did not publish a
 package, push commits or create a release.
 
-## Check 1: manual review and preview apply
+## Check 1: manual review and preview apply — PASS
 
 Amit reported the review complete on 18 Oct. The saved `corrections.csv`
 contains **20 confirmed rows**, including two No bib choices. The browser
@@ -64,9 +64,35 @@ from the start list. Inspection found six rejected numbers across four rows:
 | set3_02.JPG | 3455;3632;2073 | 3855;3236;3482;775 |
 
 No `results_final.csv` was created by the rejected apply. Source/input hashes
-were unchanged. The manual entries have not been silently replaced or allowed
-past the start-list guard. Awaiting Amit's choice to recheck these rows or use
-the dataset labels in a separate correction file.
+were unchanged. Amit then explicitly approved all four RBNR-label replacements
+shown above and instructed that the start-list guard stay unchanged.
+
+The agent created `corrections-validated.csv` with exactly those four changes.
+The original export remains intact; the other 16 correction rows are unchanged.
+The approved group-photo order is `3855;3236;3482;775`.
+
+```powershell
+.venv/Scripts/biblocal.exe apply data/k1_biblocal/task9-review/corrections-validated.csv --results data/k1_biblocal/task9-review/results.csv --start-list data/k1_biblocal/start-truth.csv
+```
+
+This command exited successfully: **20 corrected**, write mode **none**,
+**0 written**, **20 write-skipped**, **0 failures**. Inspection of
+`results_final.csv` verified:
+
+- All **100 rows** remain in their original order.
+- Exactly **20 rows** have reason `manual`: **18 tagged, 2 none**.
+- Their bibs match the approved CSV and start-list spelling; manual scores
+  and stale suggestions are cleared.
+- The other **80 result rows** are unchanged.
+- SHA-256 checks match for all **100 source JPEGs**, the original
+  `corrections.csv`, `results.csv` and the start list.
+- The unchanged guard still rejects the original `211` entry. No application
+  code or validation rule was changed.
+
+Private evidence: `data/k1_biblocal/task9-review/apply-verification.json`.
+This is acceptance testing with four explicitly approved dataset-label
+replacements, not a new OCR accuracy measurement. Check 1 is complete;
+the browser name remains unreported.
 
 Focused validation regression: **12 passed in 1.92 seconds**
 (`tests/test_apply.py`). No application defect has been identified.
@@ -103,12 +129,14 @@ ten-photo functional smoke result; power condition was not supplied. It does
 not replace the documented K2 benchmark. Private evidence is in
 `data/k4_biblocal/final-offline/` and `.tmp/final-check-inspection.json`.
 
-## Remaining before 18:00 IST
+## Freeze readiness
 
-Resolve the four manual-correction rows, rerun preview-only apply and inspect
-`results_final.csv`, then commit the acceptance results and identify the
-frozen commit. The physical offline check is complete. No further planned
-feature work remains in the reduced scope.
+**Both final acceptance checks pass.** No implementation fixes or acceptance
+checks remain in the reduced scope. The commit recording this completion is
+the freeze candidate; its application code and package metadata are unchanged
+from `a4cd8fc`, the version used for the physical offline check and built wheel.
+The existing 126-test full-suite result still applies; no code changed during
+these final checks. No tag, push or release publication was performed.
 
 The real range-list wrong rate is still 7.76%, and small bibs remain a known
 limit. These are disclosed limitations, not a claimed less-than-3% result.

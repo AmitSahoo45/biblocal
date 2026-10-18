@@ -660,8 +660,10 @@ def test_build_args_dedupes_and_ends_with_execute(tmp_path):
 including local Edge export/keyboard interactions and real ExifTool apply.
 Final review fixes reject output within the source folder and unsupported
 CLI review thresholds below the OCR floor of 0.50. Defaults are unchanged.
-Amit's five-card acceptance check is pending; the page and exact instructions
-are in `docs/notes/task9-review.md`. Continue Task 11 under the received GO.
+Amit completed 20 review cards and approved RBNR-label replacements for four
+rejected rows. Preview-only apply passed with the start-list guard unchanged:
+20 manual rows and 80 unchanged rows; all source hashes match. Acceptance
+details are in `docs/notes/task9-review.md` and `docs/notes/release-check.md`.
 
 **Files:**
 - Create: `src/biblocal/review.py`
@@ -705,7 +707,7 @@ def test_apply_rejects_bad_bib():
         apply_corrections([PhotoResult("a.jpg", "review")], {"a.jpg": ["2A7"]}, None)
 ```
 - [x] **Step 2:** Run → FAIL. **Step 3:** Implement. **Step 4:** Run all tests → PASS.
-- [ ] **Step 5: Manual check (Amit, 5 minutes).** Open `review.html` from a real run, fix 5 cards, download `corrections.csv`, run `apply`, and check `results_final.csv`.
+- [x] **Step 5: Manual check.** Amit reviewed/exported 20 cards, then approved four dataset-label replacements in a separate CSV. Preview-only `apply` and inspection of `results_final.csv` passed with the original guard and all source hashes unchanged.
 - [x] **Step 6: Commit:** `task 9: review page and apply`.
 
 ---
@@ -739,8 +741,8 @@ MIT copyright is Amit Sahoo. Task 11 checks: four expected failures first,
 then five passing; final full suite 126 passed. Built and tested the installed
 wheel with runtime network/download calls blocked. Complete vendor license
 texts and model inventory are included in the wheel. ExifTool and PyInstaller
-are not redistributed. Verification and remaining human checks are recorded
-in `docs/notes/release-check.md`. Stop after this task as requested.
+are not redistributed. Both final human acceptance checks now pass; completion
+evidence is recorded in `docs/notes/release-check.md`. Stop as requested.
 
 **Files:**
 - Create: `README.md`, `MODELS.md`, `THIRD_PARTY_NOTICES.md`, `LICENSE` (MIT; ask Amit for the name on the copyright line)

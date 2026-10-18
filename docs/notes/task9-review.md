@@ -33,7 +33,7 @@ list. Only confirmed cards are exported. Empty corrections set a result to
 or choosing No bib does **not** delete earlier photo keywords. Existing
 keywords belong to the photographer and are preserved.
 
-## Amit's review check — export complete, apply validation pending
+## Amit's review check — PASS
 
 A private acceptance page is ready at:
 
@@ -62,9 +62,16 @@ source photo was changed.
 5. Report PASS or FAIL, and the browser used.
 
 Amit reported completion on 18 Oct and exported all **20 cards**, including
-two No bib choices. Browser name was not supplied. The agent's preview-only
-apply with the supplied start list rejected numbers in four rows; no final
-CSV was created. The guard is working as designed, and the exported file is
-preserved. The exact entries and resolution are tracked in
-[release-check.md](release-check.md). End-to-end acceptance remains pending
-until those rows are resolved and the final CSV is inspected.
+two No bib choices. Browser name was not supplied. The first preview-only
+apply correctly rejected numbers in four rows. Amit explicitly approved
+replacing those rows with their RBNR labels while retaining the start-list
+guard. Those four changes are in a separate `corrections-validated.csv`;
+the original exported file and the other 16 corrections are preserved.
+
+Preview-only apply on the validated file **passed**. The inspected
+`results_final.csv` contains 100 rows: 20 manual results (18 tagged, two none)
+and 80 unchanged rows. All 100 source JPEG hashes and original input CSV
+hashes match. No metadata was written, and the original invalid correction
+still fails validation. The exact command and evidence are recorded in
+[release-check.md](release-check.md). End-to-end acceptance is **PASS**.
+These manually resolved results do not change the published OCR accuracy.
