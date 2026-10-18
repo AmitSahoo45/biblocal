@@ -41,28 +41,74 @@ Private verification details: `.tmp/package-smoke/verification.json`.
 The build and smoke files are git-ignored. These checks did not publish a
 package, push commits or create a release.
 
+## Check 1: manual review and preview apply
+
+Amit reported the review complete on 18 Oct. The saved `corrections.csv`
+contains **20 confirmed rows**, including two No bib choices. The browser
+name was not supplied (the report retained a placeholder).
+
+The agent ran the requested preview-only command with the original start list:
+
+```powershell
+.venv/Scripts/biblocal.exe apply data/k1_biblocal/task9-review/corrections.csv --results data/k1_biblocal/task9-review/results.csv --start-list data/k1_biblocal/start-truth.csv
+```
+
+Validation correctly rejected `211` for `set1_28.JPG` because it is absent
+from the start list. Inspection found six rejected numbers across four rows:
+
+| Photo | Entered numbers absent from start list | RBNR annotated bibs for the photo |
+|---|---|---|
+| set1_28.JPG | 211 | 311 |
+| set1_92.JPG | 3278 | 3276 |
+| set2_36.JPG | 0190 | 10190 |
+| set3_02.JPG | 3455;3632;2073 | 3855;3236;3482;775 |
+
+No `results_final.csv` was created by the rejected apply. Source/input hashes
+were unchanged. The manual entries have not been silently replaced or allowed
+past the start-list guard. Awaiting Amit's choice to recheck these rows or use
+the dataset labels in a separate correction file.
+
+Focused validation regression: **12 passed in 1.92 seconds**
+(`tests/test_apply.py`). No application defect has been identified.
+See [the review check](task9-review.md) for the original acceptance procedure.
+
+## Check 2: physical network-off scan — PASS
+
+Amit confirmed **Wi-Fi off and Ethernet unplugged** for this run on the
+finished application code at `a4cd8fc`. Adapter state is user-reported; saved
+run artifacts were independently inspected by the agent.
+
+```powershell
+.venv/Scripts/biblocal.exe scan data/k4 --start-list data/k1_biblocal/start-truth.csv --out data/k4_biblocal/final-offline
+```
+
+The saved run spans **18 Oct 2026, 09:07:15–09:07:25 IST**, with **CPU,
+one worker**, accept 0.90 and minimum height share 0.04:
+
+```text
+tagged=8 review=0 none=2 error=0 skipped=13 seconds=9.90929859993048
+write={'mode': 'none', 'written': 0, 'skipped': 10, 'failed': []}
+```
+
+The CSV has exactly ten rows and all eight accepted tags match the annotations.
+Bib 2605 appears on exactly `set1_12.JPG` and `set1_14.JPG`.
+The 13 skipped files are eight `_original` backups, four digiKam database
+files and `.dtrash/digikam.uuid`; **no JPEG was skipped**.
+The local review page exists, has no external resource references, and
+correctly shows an empty review queue. The two `none` rows are abstentions,
+not evidence that those photos have no visible bib.
+
+No metadata writes were requested or recorded. The elapsed 9.91 seconds is a
+ten-photo functional smoke result; power condition was not supplied. It does
+not replace the documented K2 benchmark. Private evidence is in
+`data/k4_biblocal/final-offline/` and `.tmp/final-check-inspection.json`.
+
 ## Remaining before 18:00 IST
 
-1. **Amit's five-card review check.** Amit said he will run it; PASS/FAIL and
-   browser are still pending. Follow [the prepared check](task9-review.md),
-   including inspecting `results_final.csv` after preview-only apply.
-2. **Physical network-off check on the finished version.** The earlier spike
-   airplane-mode PASS remains valid historical evidence; it predates Tasks
-   9 and 11. Turn Wi-Fi off and disconnect Ethernet, then run the following
-   preview scan on the existing K4 temporary copies. Inspect its CSV and open
-   its local review page. Record PASS/FAIL, command output and power condition
-   here, then restore networking.
-
-   ```powershell
-   .venv/Scripts/biblocal.exe scan data/k4 --start-list data/k1_biblocal/start-truth.csv --out data/k4_biblocal/final-offline
-   ```
-
-   Expected: 10 result rows, no errors or metadata writes; the known K4 run has
-   eight tagged and two none. An empty review queue is valid for these copies.
-   This command has no `--write` flag and preserves their metadata and pixels.
-3. **Resolve any failures from those two checks, rerun affected tests, commit
-   the results/fixes and identify the final frozen commit by 18:00 IST.**
-   No further planned feature work remains in the reduced scope.
+Resolve the four manual-correction rows, rerun preview-only apply and inspect
+`results_final.csv`, then commit the acceptance results and identify the
+frozen commit. The physical offline check is complete. No further planned
+feature work remains in the reduced scope.
 
 The real range-list wrong rate is still 7.76%, and small bibs remain a known
 limit. These are disclosed limitations, not a claimed less-than-3% result.

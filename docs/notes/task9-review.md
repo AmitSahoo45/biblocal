@@ -33,7 +33,7 @@ list. Only confirmed cards are exported. Empty corrections set a result to
 or choosing No bib does **not** delete earlier photo keywords. Existing
 keywords belong to the photographer and are preserved.
 
-## Amit's five-card check — pending
+## Amit's review check — export complete, apply validation pending
 
 A private acceptance page is ready at:
 
@@ -61,4 +61,10 @@ source photo was changed.
    should retain their previous values. This command does not write metadata.
 5. Report PASS or FAIL, and the browser used.
 
-Human acceptance: **PENDING**. Automated browser success is recorded separately.
+Amit reported completion on 18 Oct and exported all **20 cards**, including
+two No bib choices. Browser name was not supplied. The agent's preview-only
+apply with the supplied start list rejected numbers in four rows; no final
+CSV was created. The guard is working as designed, and the exported file is
+preserved. The exact entries and resolution are tracked in
+[release-check.md](release-check.md). End-to-end acceptance remains pending
+until those rows are resolved and the final CSV is inspected.
